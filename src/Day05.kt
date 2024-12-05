@@ -24,6 +24,17 @@ fun main() {
     }
 
 
+    fun quicksort(list: List<Int>, rules: List<Pair<Int, Int>>): List<Int> {
+        if (list.size <= 1) return list
+
+        val pivot = list.first()
+        val (left, right) = list
+            .drop(1)
+            .partition { rules.any { rule -> rule.first == it && rule.second == pivot } }
+
+        return quicksort(left, rules) + pivot + quicksort(right, rules)
+    }
+
     fun part2(input: List<String>): Int {
         val indexOfFirst = input.indexOfFirst { it.isEmpty() }
         val rules =
@@ -36,23 +47,7 @@ fun main() {
                 .map { it.split(",").map(String::toInt) }
 
         return updates.sumOf { update ->
-            val applicableRules = rules
-                .filter { update.containsAll(it.toList()) }
-
-            val sortedUpdate = generateSequence(update) { currentList ->
-                val swapped = applicableRules.fold(currentList) { acc, rule ->
-                    val left = acc.indexOf(rule.first)
-                    val right = acc.indexOf(rule.second)
-                    if (left > right) {
-                        acc.toMutableList().apply {
-                            this[left] = acc[right]
-                            this[right] = acc[left]
-                        }
-                    } else acc
-                }
-                if (swapped == currentList) null else swapped
-            }.last()
-
+            val sortedUpdate = quicksort(update, rules)
             if (update == sortedUpdate) 0
             else sortedUpdate[sortedUpdate.lastIndex / 2]
         }
