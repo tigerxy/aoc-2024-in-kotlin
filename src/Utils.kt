@@ -65,3 +65,11 @@ fun <T> List<List<T>>.antiTypeDiagonals(): List<List<T>> {
 }
 
 fun List<Char>.asString() = joinToString("")
+
+inline fun <reified T> Array<Array<T>>.deepCopy() = Array(size) { i -> get(i).clone() }
+
+fun <T> assertEquals(expected: T, actual: T, message: String? = null) {
+    if (expected != actual) {
+        throw AssertionError(message ?: "Assertion failed: Expected <$expected>, but got <$actual>")
+    }
+}
